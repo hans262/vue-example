@@ -1,16 +1,11 @@
+
+<script setup lang="ts">
+// import { RouterLink } from 'vue-router'
+// import HelloWorld from './components/HelloWorld.vue'
+</script>
+
 <template>
-  <div id="app">
-  	<transition name="fade" mode="out-in" :duration="{ enter: 500, leave: 300 }">
-	  	<router-view/>
-	  </transition>
-  </div>
+  <!-- <RouterLink to="/">Home</RouterLink> -->
+  <!-- <router-link to="/about">About</router-link> -->
+  <RouterView />
 </template>
-<style>
-body{margin: 0;padding: 0}
-#app {
-  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #303133;
-}
-</style>

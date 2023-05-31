@@ -1,47 +1,76 @@
 <template>
-	<el-row>
-		<el-col :span="12" style="padding-left: 20px;">
-			<el-breadcrumb separator-class="el-icon-arrow-right" style="line-height: 60px;">
-				<el-breadcrumb-item :to="{path:'/'}">首页</el-breadcrumb-item>
-			  <el-breadcrumb-item v-for="item in routeList" :key="item.id">{{item}}</el-breadcrumb-item>
-			</el-breadcrumb>
-		</el-col>
-		<el-col :span="12">
-			<el-menu
-			  class="el-menu-demo"
-			  mode="horizontal">
-			  <el-submenu index="66">
-			    <template slot="title">
-			    	<i class="el-icon-tickets"></i><span>admin,下午好</span>
-			    </template>
-			    <el-menu-item index="66-1">账号信息</el-menu-item>
-			    <el-menu-item index="66-2">修改密码</el-menu-item>
-			    <el-menu-item index="66-3">退出</el-menu-item>
-			  </el-submenu>
-			</el-menu>
-		</el-col>
-	</el-row>
+	<div class="header">
+		<div class="h-left">
+			<!-- <el-breadcrumb separator-class="el-icon-arrow-right" style="line-height: 60px;"> -->
+			<!-- <el-breadcrumb-item :to="{path:'/'}">首页</el-breadcrumb-item> -->
+			<!-- <el-breadcrumb-item v-for="item in routeList" :key="item.id">{{item}}</el-breadcrumb-item> -->
+			<!-- </el-breadcrumb> -->
+		</div>
+		<div class="h-right">
+			<el-dropdown  size="large" type="primary">
+				<span class="el-dropdown-link">
+					admin,下午好<el-icon class="el-icon--right"><arrow-down /></el-icon>
+				</span>
+				<template #dropdown>
+					<el-dropdown-menu>
+						<el-dropdown-item>账号信息</el-dropdown-item>
+						<el-dropdown-item>修改密码</el-dropdown-item>
+						<el-dropdown-item>退出</el-dropdown-item>
+					</el-dropdown-menu>
+				</template>
+			</el-dropdown>
+		</div>
+	</div>
 </template>
-<script>
-export default{
-	name:'Header',
-	data(){
-		return {
-		}
-	},
-	computed:{
-		routeList:function(){
-			return this.$route.name.split('/')
-		}
-	},
-	methods:{
-		getRoutePath(){
-      this.realList = this.$route.meta.routeList;
-    }
-	}
-}
+<script lang="ts" setup>
+
+// export default{
+// 	name:'Header',
+// 	data(){
+// 		return {
+// 		}
+// 	},
+// 	computed:{
+// 		routeList:function(){
+// 			// return this.$route.name.split('/')
+// 		}
+// 	},
+// 	methods:{
+// 		getRoutePath(){
+//       // this.realList = this.$route.meta.routeList;
+//     }
+// 	}
+// }
 </script>
 <style scoped>
-	/*.el-menu--horizontal>.el-menu-item{float: right;}*/
-	.el-menu--horizontal>.el-submenu{float: right;}
+.el-menu--horizontal>.el-submenu {
+	float: right;
+}
+
+.header {
+	height: 60px;
+	align-items: center;
+	display: flex;
+	/* border: 1px solid; */
+}
+
+.h-left {
+	flex: 1;
+}
+
+.h-right {
+	cursor: pointer;
+	color: var(--el-color-primary);
+}
+
+.el-dropdown-link {
+	cursor: pointer;
+	color: var(--el-color-primary);
+	display: flex;
+	align-items: center;
+}
+
+span:focus-visible {
+	outline: none;
+}
 </style>
