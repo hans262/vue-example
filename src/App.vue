@@ -1,36 +1,98 @@
 <script setup lang="ts">
-import { watch } from "vue";
-import { useRoute } from "vue-router";
+import { computed, watch, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from 'vuex'
 
 const route = useRoute()
+const store = useStore()
+const router = useRouter()
+const currentPath = ref('/login')
 
 watch(route, () => {
-  console.log(route.path)
+  if (route.path === '/login') {
+    currentPath.value = route.path
+  }
+  if (route.path === '/register') {
+    currentPath.value = route.path
+  }
+  // console.log(route.path)
+})
+
+function loginClick() {
+  router.push('/login')
+}
+
+function registerClick() {
+  router.push('/register')
+}
+
+function logout() {
+  router.push('/login')
+  store.commit('logout')
+}
+
+const toUrl = computed(() => {
+  if (store.state.isLogin) {
+    return '/account'
+  } else {
+    return currentPath.value
+  }
 })
 
 </script>
 
 <template>
   <div class="app">
-    <img alt="Vue logo" src="/vite.svg" class="logo">
-
-    <el-space>
-      <RouterLink to="/">
-        <el-button>Home</el-button>
-      </RouterLink>
-      <RouterLink to="/about">
-        <el-button>About</el-button>
-      </RouterLink>
-      <RouterLink to="/login">
-        <el-button>Login</el-button>
-      </RouterLink>
-    </el-space>
-
-    <RouterView v-slot="{ Component }">
-      <Transition name="fade" mode="out-in">
-        <component :is="Component" />
-      </Transition>
-    </RouterView>
+    <div class="header">
+      <img alt="Vue logo" src="/vite.svg" class="logo">
+      <el-space>
+        <RouterLink to="/">
+          <el-button :class="{ active: route.path === '/' }">
+            首页
+          </el-button>
+        </RouterLink>
+        <RouterLink to="/about">
+          <el-button :class="{ active: route.path === '/about' }">关于</el-button>
+        </RouterLink>
+        <RouterLink :to="toUrl">
+          <el-dropdown v-if="store.state.isLogin">
+            <el-button :class="{ active: route.path === '/account' }">
+              {{ store.state.user?.username }},下午好
+              <el-icon class="el-icon--right"><arrow-down /></el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>账号信息</el-dropdown-item>
+                <el-dropdown-item>修改密码</el-dropdown-item>
+                <el-dropdown-item @click="logout">退出</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <el-dropdown v-else>
+            <el-button :class="{ active: route.path === '/login' || route.path === '/register' }">
+              {{ currentPath === '/login' ? '登陆' : '注册' }}
+              <el-icon class="el-icon--right"><arrow-down /></el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item v-if="currentPath === '/login'" @click="registerClick">
+                  注册
+                </el-dropdown-item>
+                <el-dropdown-item v-else @click="loginClick">登陆</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </RouterLink>
+      </el-space>
+      <el-divider :style="{ margin: '24px 0 0 0', border: 'none' }"></el-divider>
+    </div>
+    <div class="content">
+      <RouterView v-slot="{ Component }">
+        <Transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </Transition>
+      </RouterView>
+    </div>
   </div>
 </template>
 
@@ -45,11 +107,15 @@ watch(route, () => {
   opacity: 0;
 }
 
-.app {
+.header {
   display: flex;
   align-items: center;
-  /* justify-content: center; */
   flex-direction: column;
+  position: sticky;
+  top: 0;
+  background-color: #fbfbfb;
+  box-shadow: 0px 4px 1px 4px #fbfbfb;
+  margin-bottom: 24px;
 }
 
 .logo {
@@ -57,5 +123,23 @@ watch(route, () => {
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
+}
+
+.active {
+  color: var(--el-button-active-text-color);
+  border-color: var(--el-button-active-border-color);
+  background-color: var(--el-button-active-bg-color);
+  outline: 0;
+}
+
+.el-button:focus-visible {
+  outline: none;
+  outline-offset: 1px;
+}
+
+.content {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
 }
 </style>
