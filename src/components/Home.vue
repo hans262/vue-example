@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useStore } from 'vuex'
-const store = useStore()
+import { useMainStore } from '../store'
+import { storeToRefs } from 'pinia'
+const { users } = storeToRefs(useMainStore())
 
 </script>
 
@@ -11,7 +12,7 @@ const store = useStore()
       <el-descriptions-item label="Password" class-name="no-label"></el-descriptions-item>
       <el-descriptions-item label="Level" class-name="no-label"></el-descriptions-item>
 
-      <template v-for="user in store.state.users" :key="user.username">
+      <template v-for="user in users" :key="user.username">
         <el-descriptions-item label-class-name="no-label">{{ user.username }}</el-descriptions-item>
         <el-descriptions-item label-class-name="no-label">{{ user.password }}</el-descriptions-item>
         <el-descriptions-item label-class-name="no-label">{{ user.level }}</el-descriptions-item>

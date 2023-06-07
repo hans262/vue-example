@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { useStore } from 'vuex'
+import { storeToRefs } from 'pinia'
+import { useMainStore } from '../store'
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
-const store = useStore()
+const store = useMainStore()
+const { users } = storeToRefs(store)
+
 const username = ref('')
 const password = ref('')
 
@@ -17,11 +20,11 @@ function login() {
 
 	//注册
 	if (route.path === '/register') {
-		const n = store.state.users.filter(v => v.username === username.value)
-		if (n.length > 0) {
-			ElMessage.warning('账户已存在')
+		const [user] = users.value.filter(v => v.username === username.value)
+		if (user) {
+			ElMessage.warning('账号已存在')
 		} else {
-			store.commit('register', {
+			store.register({
 				username: username.value,
 				password: password.value
 			})
@@ -32,7 +35,7 @@ function login() {
 	}
 
 	//登陆
-	const [user] = store.state.users.filter(v => v.username === username.value)
+	const [user] = users.value.filter(v => v.username === username.value)
 	if (!user) {
 		return ElMessage.error('账号不存在')
 	}
@@ -42,7 +45,7 @@ function login() {
 	}
 
 	if (user && user.password === password.value) {
-		store.commit('login', user)
+		store.login(user)
 		ElMessage.success('登陆成功')
 		router.push('/account')
 	}
@@ -52,13 +55,8 @@ function login() {
 <template>
 	<div class="login">
 		<h1>{{ route.path === '/login' ? '登陆' : '注册' }}</h1>
-		<el-input class="mb" v-model="username" placeholder="username" />
-		<el-input @keyup.enter="login" class="mb" v-model="password" placeholder="password" />
+		<el-input class="mb2" v-model="username" placeholder="username" />
+		<el-input @keyup.enter="login" class="mb2" v-model="password" placeholder="password" />
 		<el-button @click="login">提交</el-button>
 	</div>
 </template>
-<style scoped>
-.mb {
-	margin-bottom: 20px;
-}
-</style>

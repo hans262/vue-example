@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { computed, watch, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useStore } from 'vuex'
+import { useMainStore } from './store'
+import { storeToRefs } from 'pinia'
+
+const main = useMainStore()
+
+const { currentUser, isLogin } = storeToRefs(main)
 
 const route = useRoute()
-const store = useStore()
 const router = useRouter()
 const currentPath = ref('/login')
 
@@ -27,17 +31,35 @@ function registerClick() {
 }
 
 function logout() {
+  main.logout()
   router.push('/login')
-  store.commit('logout')
 }
 
-const toUrl = computed(() => {
-  if (store.state.isLogin) {
+const toPath = computed(() => {
+  if (isLogin.value) {
     return '/account'
   } else {
     return currentPath.value
   }
 })
+
+function toDate() {
+  const h = new Date().getHours()
+
+  if (h >= 5 && h < 11) {
+    return '早上好'
+  }
+
+  if (h >= 11 && h < 14) {
+    return '中午好'
+  }
+
+  if (14 >= 2 && h < 19) {
+    return '下午好'
+  }
+
+  return '晚上好'
+}
 
 </script>
 
@@ -54,16 +76,20 @@ const toUrl = computed(() => {
         <RouterLink to="/about">
           <el-button :class="{ active: route.path === '/about' }">关于</el-button>
         </RouterLink>
-        <RouterLink :to="toUrl">
-          <el-dropdown v-if="store.state.isLogin">
-            <el-button :class="{ active: route.path === '/account' }">
-              {{ store.state.user?.username }},下午好
+        <RouterLink :to="toPath">
+          <el-dropdown v-if="isLogin">
+            <el-button :class="{
+              active: route.path === '/account' || $route.path === '/modify_password'
+            }">
+              {{ currentUser?.username }},{{ toDate() }}
               <el-icon class="el-icon--right"><arrow-down /></el-icon>
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item>账号信息</el-dropdown-item>
-                <el-dropdown-item>修改密码</el-dropdown-item>
+                <el-dropdown-item :class="{
+                  dropdownactive: route.path === '/modify_password'
+                }" @click="$router.push('/modify_password')">修改密码</el-dropdown-item>
                 <el-dropdown-item @click="logout">退出</el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -141,5 +167,12 @@ const toUrl = computed(() => {
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
+}
+</style>
+
+<style>
+.dropdownactive {
+  background-color: var(--el-dropdown-menuItem-hover-fill);
+  color: var(--el-dropdown-menuItem-hover-color);
 }
 </style>
